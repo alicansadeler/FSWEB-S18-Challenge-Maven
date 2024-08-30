@@ -1,9 +1,11 @@
 package com.workintech.fswebs18challengemaven.repository;
 import com.workintech.fswebs18challengemaven.entity.Card;
+import com.workintech.fswebs18challengemaven.exceptions.CardException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,7 +33,13 @@ public class CardRepositoryImpl implements CardRepository {
                 "SELECT c FROM Card c WHERE c.color = :color", Card.class
         );
         query.setParameter("color", color);
-        return query.getResultList();
+
+        if (!query.getResultList().isEmpty()) {
+            return query.getResultList();
+        } else {
+            throw new CardException("Color not found", HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @Override
